@@ -15,7 +15,19 @@ function printStudent(OneStudent) {
   var clone = template.cloneNode(true);
   clone.querySelector(".name").textContent = OneStudent.fullname;
   clone.querySelector(".house").textContent = OneStudent.house;
-
+  clone.querySelector("article").addEventListener("click", modal);
   document.querySelector("body").appendChild(clone);
-  console.log(OneStudent);
+  function modal() {
+    var modal = document.querySelector(".modal");
+    modal.querySelector("h1").textContent = OneStudent.fullname;
+    modal.querySelector("h2").textContent = OneStudent.house;
+    modal
+      .querySelector("object")
+      .setAttribute("data", "assets/" + OneStudent.house + ".svg");
+    var modalBg = document.querySelector(".modal-bg");
+    modalBg.classList.remove("hide");
+    modalBg.addEventListener("click", e => {
+      modalBg.classList.add("hide");
+    });
+  }
 }
