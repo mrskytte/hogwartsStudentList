@@ -21,6 +21,7 @@ function printStudent(OneStudent) {
     var modal = document.querySelector(".modal");
     modal.querySelector("h1").textContent = OneStudent.fullname;
     modal.querySelector("h2").textContent = OneStudent.house;
+    modal.dataset.house = OneStudent.house;
     modal
       .querySelector("object")
       .setAttribute("data", "assets/" + OneStudent.house + ".svg");
@@ -30,4 +31,12 @@ function printStudent(OneStudent) {
       modalBg.classList.add("hide");
     });
   }
+}
+
+document.querySelector("select#theme").addEventListener("change", selected);
+
+function selected() {
+  const modal = document.querySelector(".modal");
+  modal.dataset.house = this.value;
+  console.log(modal.dataset.house);
 }

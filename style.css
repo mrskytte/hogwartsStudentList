@@ -34,8 +34,10 @@ body {
   width: 30vw;
   height: 30vw;
   margin: auto;
-  background-color: #fff;
-  opacity: 1;
+  background-color: var(--primary-color);
+  border: 10px solid;
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
   text-align: center;
 }
 
@@ -51,4 +53,24 @@ object {
 
 .hide {
   display: none;
+}
+
+.modal[data-house="Gryffindor"] {
+  --primary-color: #d40000;
+  --secondary-color: #d4af37;
+}
+
+.modal[data-house="Hufflepuff"] {
+  --primary-color: #fedf00;
+  --secondary-color: #000000;
+}
+
+.modal[data-house="Slytherin"] {
+  --primary-color: #008000;
+  --secondary-color: #c0c0c0;
+}
+
+.modal[data-house="Ravenclaw"] {
+  --primary-color: #333399;
+  --secondary-color: #937e57;
 }

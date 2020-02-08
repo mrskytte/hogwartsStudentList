@@ -9,12 +9,21 @@
   </head>
   <body>
     <div class="hide modal-bg">
-      <div class="modal">
+      <div class="modal" data-house="gryffindor">
         <div class="svg-wrapper">
           <object data="assets/Griffindor.svg" type="image/svg+xml"></object>
         </div>
         <h1 class="modal-name">Name goes Here</h1>
         <h2 class="modal-house">House goes Here</h2>
+        <label id="theme-changer">
+          Choose theme
+          <select name="theme" id="theme">
+            <option value="gryffindor">Gryffindor theme</option>
+            <option value="hufflepuff">Hufflepuff theme</option>
+            <option value="ravenclaw">Ravenclaw theme</option>
+            <option value="slytherin">Slytherin theme</option>
+          </select>
+        </label>
       </div>
     </div>
     <template id="one-student">
