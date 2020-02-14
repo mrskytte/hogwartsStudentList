@@ -9,8 +9,8 @@ function init() {
 const Student = {
   firstName: "",
   lastName: "",
-  middleName: undefined,
-  nickName: undefined,
+  middleName: null,
+  nickName: null,
   gender: "",
   image: null,
   house: "",
@@ -22,40 +22,43 @@ const houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"];
 
 function showStudents(allStudents) {
   allStudents.forEach(createArr);
+  students.forEach(printStudent);
 }
-const student = Object.create(Student);
+
 function createArr(oneStudent) {
   const studName = oneStudent.fullname.trim();
-
+  const student = Object.create(Student);
   // Find and capitalize first name
   if (studName.indexOf(" ") === -1) {
     student.firstName = studName.substring(0, studName.length);
   } else {
     student.firstName = studName.substring(0, studName.indexOf(" "));
+    // Find and capitalize last name
+    student.lastName = studName.substring(
+      studName.lastIndexOf(" ") + 1,
+      studName.length
+    );
+    student.lastName =
+      student.lastName[0].toUpperCase() +
+      student.lastName.substring(1, student.lastName.length).toLowerCase();
+
+    if (student.lastName.indexOf("-") !== -1) {
+      student.lastName =
+        student.lastName.substring(0, student.lastName.indexOf("-") + 1) +
+        student.lastName[student.lastName.indexOf("-") + 1].toUpperCase() +
+        student.lastName.substring(
+          student.lastName.indexOf("-") + 2,
+          student.lastName.length
+        );
+    }
   }
   student.firstName =
     student.firstName[0].toUpperCase() +
     student.firstName.substring(1, student.firstName.length).toLowerCase();
 
-  // Find and capitalize last name
-  student.lastName = studName.substring(
-    studName.lastIndexOf(" ") + 1,
-    studName.length
-  );
-  student.lastName =
-    student.lastName[0].toUpperCase() +
-    student.lastName.substring(1, student.lastName.length).toLowerCase();
-
-  if (student.lastName.indexOf("-") !== -1) {
-    student.lastName =
-      student.lastName.substring(0, student.lastName.indexOf("-") + 1) +
-      student.lastName[student.lastName.indexOf("-") + 1].toUpperCase() +
-      student.lastName.substring(
-        student.lastName.indexOf("-") + 2,
-        student.lastName.length
-      );
-  }
+  // Find nicknames and middlenames
   if (studName.indexOf(" ") !== studName.lastIndexOf(" ")) {
+    // Find only nicknames and capitalize
     if (studName.indexOf(" ") + 1 == studName.indexOf('"')) {
       student.nickName = studName.substring(
         studName.indexOf('"') + 1,
@@ -64,7 +67,9 @@ function createArr(oneStudent) {
       student.nickName =
         student.nickName[0].toUpperCase() +
         student.nickName.substring(1, student.nickName.length).toLowerCase();
-    } else {
+    }
+    // Find only middlename and capitalize
+    else {
       student.middleName = studName.substring(
         studName.indexOf(" ") + 1,
         studName.lastIndexOf(" ")
@@ -74,17 +79,21 @@ function createArr(oneStudent) {
         student.middleName
           .substring(1, student.middleName.length)
           .toLowerCase();
-      student.nickName = undefined;
+      student.nickName = null;
     }
-  } else {
-    student.middleName = undefined;
-    student.nickName = undefined;
   }
+  // Set all others to null
+  else {
+    student.middleName = null;
+    student.nickName = null;
+  }
+  // Determine whether it's a boy or girl
   if (oneStudent.gender === "boy") {
     student.gender = "Boy";
   } else {
     student.gender = "Girl";
   }
+  // Determine which house they belong to
   if (oneStudent.house.trim()[0].toLowerCase() === "g") {
     student.house = houses[0];
   } else if (oneStudent.house.trim()[0].toLowerCase() === "h") {
@@ -94,28 +103,39 @@ function createArr(oneStudent) {
   } else {
     student.house = houses[3];
   }
+  students.push(student);
+  console.log(students);
 }
 
-// function printStudent(OneStudent) {
-//   var template = document.querySelector("#one-student").content;
-//   var clone = template.cloneNode(true);
-//   clone.querySelector(".name").textContent = OneStudent.fullname;
-//   clone.querySelector(".house").textContent = OneStudent.house;
-//   clone.querySelector(".one-student").dataset.house = OneStudent.house;
-//   clone.querySelector("article").addEventListener("click", modal);
-//   document.querySelector("body").appendChild(clone);
-//   function modal() {
-//     var modal = document.querySelector(".modal");
-//     modal.querySelector("h1").textContent = OneStudent.fullname;
-//     modal.querySelector("h2").textContent = OneStudent.house;
-//     modal.dataset.house = OneStudent.house;
-//     modal
-//       .querySelector("object")
-//       .setAttribute("data", "assets/" + OneStudent.house + ".svg");
-//     var modalBg = document.querySelector(".modal-bg");
-//     modalBg.classList.remove("hide");
-//     modalBg.addEventListener("click", e => {
-//       modalBg.classList.add("hide");
-//     });
-//   }
-// }
+function printStudent(thisStudent) {
+  console.log(thisStudent);
+  var template = document.querySelector("#one-student").content;
+  var clone = template.cloneNode(true);
+  clone.querySelector("#firstname").textContent = thisStudent.firstName;
+  clone.querySelector("#nickname").textContent = thisStudent.nickName;
+  clone.querySelector("#middlename").textContent = thisStudent.middleName;
+  clone.querySelector("#lastname").textContent = thisStudent.lastName;
+  clone.querySelector(".house").textContent = thisStudent.house;
+  clone.querySelector(".one-student").dataset.house = thisStudent.house;
+  clone.querySelector("article").addEventListener("click", modal);
+  document.querySelector("body").appendChild(clone);
+  function modal() {
+    var modal = document.querySelector(".modal");
+    modal.querySelector("#firstname").textContent = thisStudent.firstName;
+    modal.querySelector("#nickname").textContent = thisStudent.nickName;
+    modal.querySelector("#middlename").textContent = thisStudent.middleName;
+    modal.querySelector("#lastname").textContent = thisStudent.lastName;
+    modal.querySelector("#gender").textContent = thisStudent.gender;
+    modal.querySelector(".modal-house").textContent = thisStudent.house;
+
+    modal.dataset.house = thisStudent.house;
+    modal
+      .querySelector("object")
+      .setAttribute("data", "assets/" + thisStudent.house + ".svg");
+    var modalBg = document.querySelector(".modal-bg");
+    modalBg.classList.remove("hide");
+    modalBg.addEventListener("click", e => {
+      modalBg.classList.add("hide");
+    });
+  }
+}
