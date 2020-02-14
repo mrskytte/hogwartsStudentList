@@ -18,14 +18,15 @@ const Student = {
   isPrefect: false
 };
 const students = [];
+const houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"];
 
 function showStudents(allStudents) {
   allStudents.forEach(createArr);
 }
-
+const student = Object.create(Student);
 function createArr(oneStudent) {
   const studName = oneStudent.fullname.trim();
-  const student = Object.create(Student);
+
   // Find and capitalize first name
   if (studName.indexOf(" ") === -1) {
     student.firstName = studName.substring(0, studName.length);
@@ -54,27 +55,46 @@ function createArr(oneStudent) {
         student.lastName.length
       );
   }
-  console.log(student);
+  if (studName.indexOf(" ") !== studName.lastIndexOf(" ")) {
+    if (studName.indexOf(" ") + 1 == studName.indexOf('"')) {
+      student.nickName = studName.substring(
+        studName.indexOf('"') + 1,
+        studName.lastIndexOf('"')
+      );
+      student.nickName =
+        student.nickName[0].toUpperCase() +
+        student.nickName.substring(1, student.nickName.length).toLowerCase();
+    } else {
+      student.middleName = studName.substring(
+        studName.indexOf(" ") + 1,
+        studName.lastIndexOf(" ")
+      );
+      student.middleName =
+        student.middleName[0].toUpperCase() +
+        student.middleName
+          .substring(1, student.middleName.length)
+          .toLowerCase();
+      student.nickName = undefined;
+    }
+  } else {
+    student.middleName = undefined;
+    student.nickName = undefined;
+  }
+  if (oneStudent.gender === "boy") {
+    student.gender = "Boy";
+  } else {
+    student.gender = "Girl";
+  }
+  if (oneStudent.house.trim()[0].toLowerCase() === "g") {
+    student.house = houses[0];
+  } else if (oneStudent.house.trim()[0].toLowerCase() === "h") {
+    student.house = houses[1];
+  } else if (oneStudent.house.trim()[0].toLowerCase() === "r") {
+    student.house = houses[2];
+  } else {
+    student.house = houses[3];
+  }
 }
-
-let fullname = jsonObject.fullname;
-let animal = Object.create(Animals);
-animal.name = fullname.substring(0, fullname.indexOf(" "));
-animal.type = fullname.substring(
-  fullname.lastIndexOf(" ") + 1,
-  fullname.length
-);
-animal.description = fullname.substring(
-  fullname.indexOf(" "),
-  fullname.lastIndexOf(" ")
-);
-animal.description = animal.description.substring(
-  animal.description.lastIndexOf(" ") + 1,
-  animal.description.length
-);
-animal.age = jsonObject.age;
-// TODO: MISSING CODE HERE !!!
-allAnimals.push(animal);
 
 // function printStudent(OneStudent) {
 //   var template = document.querySelector("#one-student").content;
