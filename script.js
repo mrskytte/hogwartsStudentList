@@ -6,8 +6,17 @@ function init() {
     .then(showStudents);
 }
 
+const Student = {
+  firstName: "",
+  lastName: "",
+  middleName: undefined,
+  nickName: undefined
+};
+console.log(Student.middleName);
+
+const students = [];
 function showStudents(student) {
-  student.forEach(printStudent);
+  student.forEach(createArr);
 }
 
 function printStudent(OneStudent) {
@@ -15,6 +24,7 @@ function printStudent(OneStudent) {
   var clone = template.cloneNode(true);
   clone.querySelector(".name").textContent = OneStudent.fullname;
   clone.querySelector(".house").textContent = OneStudent.house;
+  clone.querySelector(".one-student").dataset.house = OneStudent.house;
   clone.querySelector("article").addEventListener("click", modal);
   document.querySelector("body").appendChild(clone);
   function modal() {
@@ -33,10 +43,8 @@ function printStudent(OneStudent) {
   }
 }
 
-document.querySelector("select#theme").addEventListener("change", selected);
+// document.querySelector("select#theme").addEventListener("change", selected);
 
-function selected() {
-  const modal = document.querySelector(".modal");
-  modal.dataset.house = this.value;
-  console.log(modal.dataset.house);
-}
+// function selected() {
+//   document.querySelector(".modal").dataset.house = this.value;
+// }
