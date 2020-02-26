@@ -9,16 +9,51 @@
   </head>
   <body>
     <div class="hide modal-bg">
-      <div class="modal" data-house="gryffindor">
-        <div class="svg-wrapper">
-          <object data="assets/Griffindor.svg" type="image/svg+xml"></object>
+      <div id="modal" data-house="Gryffindor">
+        <div id="modal-header">
+          <div id="student-photo">
+            <img src="assets/images/potter_h.png" alt="Student Photo" />
+          </div>
+          <h1 id="student-name">Harry James Potter</h1>
+          <div id="housecrest">
+            <img src="assets/Gryffindor.png" alt="House Crest" />
+          </div>
+          <div id="close">X</div>
         </div>
-        <h1 class="modal-name">
-          <span id="firstname"></span> <span id="middlename"></span>
-          <span id="nickname"></span> <span id="lastname"></span>
-        </h1>
-        <h2 class="modal-house">House goes Here</h2>
-        <h2 id="modal-gender">Gender: <span id="gender"></span></h2>
+        <div id="modal-body">
+          <div id="base-info">
+            <p>First Name:</p>
+            <p id="first-name" class="base-info-names">Harry</p>
+            <p>Middle Name:</p>
+            <p id="middle-name" class="base-info-names">James</p>
+            <p>Nickname:</p>
+            <p id="nickname" class="base-info-names">Potty</p>
+            <p>Last Name:</p>
+            <p id="last-name" class="base-info-names">Potter</p>
+            <p>Blood Status:</p>
+            <p id="blood-status" class="base-info-names">Pure-Blood</p>
+          </div>
+          <div id="additional-info">
+            <div id="prefect-status" data-prefect="true">
+              <p>This student is not a prefect</p>
+              <button id="prefect-button" data-prefect="true">
+                Promote to Prefect
+              </button>
+            </div>
+            <div id="squad-status" data-squad="true">
+              <p>This student is not a member of the inquisitorial squad</p>
+              <button id="squad-button" data-squad="true">
+                Grant Membership
+              </button>
+            </div>
+            <div id="enrolled-status" data-enrolled>
+              <p>This student is currently enrolled at Hogwarts</p>
+              <button id="enrollment-button" data-enrolled="true">
+                Expel Student
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <template id="one-student">
@@ -31,5 +66,17 @@
       </article>
     </template>
     <script src="script.js"></script>
+    <footer>
+      <div>
+        Icons made by
+        <a href="https://www.flaticon.com/authors/freepik" title="Freepik"
+          >Freepik</a
+        >
+        from
+        <a href="https://www.flaticon.com/" title="Flaticon"
+          >www.flaticon.com</a
+        >
+      </div>
+    </footer>
   </body>
 </html>

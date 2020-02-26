@@ -1,6 +1,31 @@
 * {
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
+  font-family: "Courier New", Courier, monospace;
+}
+
+#modal[data-house="Gryffindor"],
+.one-student[data-house="Gryffindor"] {
+  --primary-color: #7f0909;
+  --secondary-color: #ffc500;
+}
+
+#modal[data-house="Hufflepuff"],
+.one-student[data-house="Hufflepuff"] {
+  --primary-color: #eee117;
+  --secondary-color: #000000;
+}
+
+#modal[data-house="Slytherin"],
+.one-student[data-house="Slytherin"] {
+  --primary-color: #0d6217;
+  --secondary-color: #aaaaaa;
+}
+
+#modal[data-house="Ravenclaw"],
+.one-student[data-house="Ravenclaw"] {
+  --primary-color: #000a90;
+  --secondary-color: #946b2d;
 }
 
 body {
@@ -28,55 +53,92 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-.modal {
-  display: flex;
+#modal {
   flex-direction: column;
   justify-content: space-around;
   align-content: space-around;
-  width: 30vw;
-  height: 30vw;
+  width: 90%;
+  height: 70%;
   margin: auto;
-  background-color: var(--primary-color);
-  border: 10px solid;
-  border-color: var(--secondary-color);
-  color: var(--secondary-color);
-  text-align: center;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
-.svg-wrapper {
+#modal-header {
+  position: relative;
   display: flex;
-  justify-content: center;
-  height: 50%;
+  justify-content: space-around;
+  align-items: center;
+  height: 25%;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  margin-top: 0;
+  border: 5px solid var(--secondary-color);
+  border-bottom: none;
 }
 
-object {
+#close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  cursor: pointer;
+}
+
+#student-photo,
+#housecrest {
+  height: 80%;
+}
+
+#housecrest img,
+#student-photo img {
+  width: 100%;
   height: 100%;
+}
+
+#modal-body {
+  display: flex;
+  margin-top: 0;
+  height: 75%;
+}
+
+#modal-body button {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  border: 1px solid black;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+#modal-body button:hover {
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 255, 0.2);
+}
+
+#base-info {
+  width: 40%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: auto;
+  font-size: 1.1rem;
+  margin-left: 5rem;
+  border-right: 1px solid var(--primary-color);
+}
+
+.base-info-names {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+#additional-info {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: auto;
+  font-size: 1.1rem;
+  margin-left: 5rem;
+  line-height: 1.8rem;
 }
 
 .hide {
   display: none;
-}
-
-.modal[data-house="Gryffindor"],
-.one-student[data-house="Gryffindor"] {
-  --primary-color: #7f0909;
-  --secondary-color: #ffc500;
-}
-
-.modal[data-house="Hufflepuff"],
-.one-student[data-house="Hufflepuff"] {
-  --primary-color: #eee117;
-  --secondary-color: #000000;
-}
-
-.modal[data-house="Slytherin"],
-.one-student[data-house="Slytherin"] {
-  --primary-color: #0d6217;
-  --secondary-color: #aaaaaa;
-}
-
-.modal[data-house="Ravenclaw"],
-.one-student[data-house="Ravenclaw"] {
-  --primary-color: #000a90;
-  --secondary-color: #946b2d;
 }
