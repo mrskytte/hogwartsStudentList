@@ -49,11 +49,29 @@
           <option value="half">Half Blood</option>
           <option value="muggle">Muggle Parents</option>
         </select>
-        <button>Clear All</button>
+        <button disabled>Clear All</button>
       </div>
     </header>
-    <main></main>
-    <div class="hide modal-bg">
+    <main>
+      <div id="about-list">
+        <h2>Students in Gryffindor:</h2>
+        <h2 id="gryfnumber">10</h2>
+        <h2>Students in Hufflepuff:</h2>
+        <h2 id="hufflenumber">10</h2>
+        <h2>Students in Ravenclaw:</h2>
+        <h2 id="ravennumber">10</h2>
+        <h2>Students in Slytherin:</h2>
+        <h2 id="slythnumber">10</h2>
+        <h2>Enrolled Students:</h2>
+        <h2 id="enrollednumber">27</h2>
+        <h2>Expelled Students:</h2>
+        <h2 id="expellednumber">10</h2>
+        <h2>Displayed Students:</h2>
+        <h2 id="displayednumber">27</h2>
+      </div>
+      <div id="studentlist"></div>
+    </main>
+    <div class="modal-bg hide">
       <div id="modal" data-house="Gryffindor">
         <div id="modal-header">
           <div id="student-photo">
@@ -107,7 +125,6 @@
           <span id="firstname"></span> <span id="middlename"></span>
           <span id="nickname"></span> <span id="lastname"></span>
         </h1>
-        <h2 class="house">House goes here</h2>
       </article>
     </template>
     <script src="script.js"></script>
