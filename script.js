@@ -1,10 +1,5 @@
+"use strict";
 window.addEventListener("DOMContentLoaded", init);
-
-function init() {
-  fetch("students1991.json")
-    .then(e => e.json())
-    .then(showStudents);
-}
 
 const Student = {
   firstName: "",
@@ -14,17 +9,69 @@ const Student = {
   gender: "",
   image: null,
   house: "",
-  OWLScore: 0,
-  isPrefect: false
+  bloodstatus: "",
+  isEnrolled: "enrolled",
+  isSquad: null,
+  isPrefect: null
 };
-const students = [];
 
-function showStudents(allStudents) {
-  allStudents.forEach(createArr);
-  students.forEach(printStudent);
+let countFiles = 0;
+const students = [];
+let filteredStudents;
+const bloodLines = { half: [], pure: [] };
+let gryffindorStudents = 0;
+let hufflepuffStudents = 0;
+let ravenclawStudents = 0;
+let slytherinStudents = 0;
+const expelled = [];
+
+const settings = {
+  sort: null,
+  filterHouse: null,
+  filterEnrollment: null,
+  filterAddInfo: null,
+  filterBlood: null,
+  hacked: false
+};
+
+function init() {
+  loadJSON("//petlatkea.dk/2020/hogwarts/students.json", prepareStudents);
+  loadJSON("//petlatkea.dk/2020/hogwarts/families.json", storeFamilyBloodline);
 }
 
-function createArr(oneStudent) {
+function loadJSON(url, callback) {
+  fetch(url)
+    .then(e => e.json())
+    .then(callback);
+}
+
+function storeFamilyBloodline(allBloodlines) {
+  bloodLines.half = allBloodlines.half;
+  bloodLines.pure = allBloodlines.pure;
+  countFiles++;
+  if (countFiles === 2) {
+    checkBloodline();
+    prepareData();
+  }
+}
+
+function prepareStudents(allStudents) {
+  allStudents.forEach(createStudentObject);
+  countFiles++;
+  if (countFiles === 2) {
+    checkBloodline();
+    prepareData();
+  }
+}
+
+function prepareData() {
+  houseCount();
+  const currentStudents = checkFilters();
+  console.log(currentStudents);
+  students.forEach(displayStudents);
+}
+
+function createStudentObject(oneStudent) {
   const studName = oneStudent.fullname.trim();
   const student = Object.create(Student);
   // Find and capitalize first name
@@ -113,34 +160,100 @@ function getHouse(house) {
   }
 }
 
-function printStudent(thisStudent) {
+function checkBloodline() {
+  students.forEach(student => {
+    bloodLines.half.includes(student.lastName)
+      ? (student.bloodstatus = "half")
+      : bloodLines.pure.includes(student.lastName)
+      ? (student.bloodstatus = "pure")
+      : (student.bloodstatus = "muggleborn");
+  });
+}
+
+function houseCount() {
+  students.forEach(student => {
+    student.house === "Gryffindor"
+      ? gryffindorStudents++
+      : student.house === "Hufflepuff"
+      ? hufflepuffStudents++
+      : student.house === "Ravenclaw"
+      ? ravenclawStudents++
+      : slytherinStudents++;
+  });
+}
+
+function checkFilters() {
+  settings.filterHouse = "Gryffindor";
+  settings.filterEnrollment = "enrolled";
+  settings.filterBlood = "muggleborn";
+  filteredStudents = students;
+  if (
+    settings.filterHouse === null &&
+    settings.filterEnrollment === null &&
+    settings.filterBlood === null &&
+    settings.filterAddInfo === null
+  ) {
+    return filteredStudents;
+  } else {
+    if (settings.filterHouse !== null) {
+      filteredStudents = filterStudents(settings.filterHouse);
+    }
+    if (settings.filterEnrollment !== null) {
+      filteredStudents = filterStudents(settings.filterEnrollment);
+    }
+    if (settings.filterBlood !== null) {
+      filteredStudents = filterStudents(settings.filterBlood);
+    }
+    if (settings.filterAddInfo !== null) {
+      filteredStudents = filterStudents(settings.filterAddInfo);
+    }
+    return filteredStudents;
+  }
+}
+
+function filterStudents(filterOption) {
+  let thisFilter = filteredStudents.filter(hasFilterOption);
+  return thisFilter;
+  function hasFilterOption(student) {
+    if (
+      student.house === filterOption ||
+      student.isEnrolled === filterOption ||
+      student.bloodstatus === filterOption ||
+      student.isPrefect === filterOption ||
+      student.isSquad === filterOption
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
+function displayStudents(thisStudent) {
   const template = document.querySelector("#one-student").content;
   const clone = template.cloneNode(true);
   clone.querySelector("#firstname").textContent = thisStudent.firstName;
   clone.querySelector("#nickname").textContent = thisStudent.nickName;
   clone.querySelector("#middlename").textContent = thisStudent.middleName;
   clone.querySelector("#lastname").textContent = thisStudent.lastName;
-  clone.querySelector(".house").textContent = thisStudent.house;
-  clone.querySelector(".one-student").dataset.house = thisStudent.house;
   clone.querySelector("article").addEventListener("click", function() {
     modal(thisStudent);
   });
-  document.querySelector("body").appendChild(clone);
+  document.querySelector("#studentlist").appendChild(clone);
 }
 
 function modal(clickedStudent) {
-  const modal = document.querySelector(".modal");
-  modal.querySelector("#firstname").textContent = clickedStudent.firstName;
-  modal.querySelector("#nickname").textContent = clickedStudent.nickName;
-  modal.querySelector("#middlename").textContent = clickedStudent.middleName;
-  modal.querySelector("#lastname").textContent = clickedStudent.lastName;
-  modal.querySelector("#gender").textContent = clickedStudent.gender;
-  modal.querySelector(".modal-house").textContent = clickedStudent.house;
-
-  modal.dataset.house = clickedStudent.house;
-  modal
-    .querySelector("object")
-    .setAttribute("data", "assets/" + clickedStudent.house + ".svg");
+  // const modal = document.querySelector(".modal");
+  // modal.querySelector("#firstname").textContent = clickedStudent.firstName;
+  // modal.querySelector("#nickname").textContent = clickedStudent.nickName;
+  // modal.querySelector("#middlename").textContent = clickedStudent.middleName;
+  // modal.querySelector("#lastname").textContent = clickedStudent.lastName;
+  // modal.querySelector("#gender").textContent = clickedStudent.gender;
+  // modal.querySelector(".modal-house").textContent = clickedStudent.house;
+  // modal.dataset.house = clickedStudent.house;
+  // // modal
+  // //   .querySelector("img")
+  // //   .setAttribute("src", "assets/" + clickedStudent.house + ".png");
   const modalBg = document.querySelector(".modal-bg");
   modalBg.classList.remove("hide");
   modalBg.addEventListener("click", e => {
