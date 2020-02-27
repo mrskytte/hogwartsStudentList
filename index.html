@@ -19,37 +19,41 @@
         </div>
       </div>
       <div id="select-wrap">
+        <button id="search"><img src="https://img.icons8.com/ios-glyphs/30/000000/search.png"></button>
         <select name="sort" id="sort">
-          <option value="sort" disabled selected>Sort</option>
+          <option value="default" disabled selected>Sort</option>
           <option value="firstname">First Name</option>
           <option value="lastname">Last Name</option>
           <option value="house">House</option>
           <option value="bloodstatus">Blood Status</option>
         </select>
+        <button id="sort-direction" data-status="disabled">&#x2B06</button>
         <select name="house" id="house">
-          <option value="" disabled selected>Filter House</option>
+          <option value="default" disabled selected>Filter House</option>
           <option value="gryffindor">Gryffindor</option>
           <option value="hufflepuff">Hufflepuff</option>
           <option value="ravenclaw">Ravenclaw</option>
           <option value="slytherin">Slytherin</option>
         </select>
         <select name="enrollment" id="enrollment">
-          <option value="" disabled selected>Filter Enrollment</option>
+          <option value="default" disabled selected>Filter Enrollment</option>
           <option value="enrolled">Enrolled</option>
           <option value="expelled">Expelled</option>
         </select>
         <select name="additional" id="additional">
-          <option value="" disabled selected>Filter Additional Info</option>
+          <option value="default" disabled selected
+            >Filter Additional Info</option
+          >
           <option value="prefects">Prefects</option>
           <option value="squad">Inquisitorial Squad</option>
         </select>
-        <select name="blood" id="blood">
-          <option value="" disabled selected>Filter Blood Status</option>
+        <select name="bªlood" id="blood">
+          <option value="default" disabled selected>Filter Blood Status</option>
           <option value="pure">Pure Blood</option>
           <option value="half">Half Blood</option>
           <option value="muggle">Muggle Parents</option>
         </select>
-        <button disabled>Clear All</button>
+        <button id="clear" data-status="disabled">Clear All</button>
       </div>
     </header>
     <main>
