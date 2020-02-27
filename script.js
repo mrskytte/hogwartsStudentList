@@ -71,12 +71,15 @@ function prepareStudents(allStudents) {
 function prepareData() {
   addImgSrc();
   houseCount();
+  initFilterNSort();
+}
+
+function initFilterNSort() {
   filteredStudents = students;
   checkFilterNSort();
 }
 
 function checkFilterNSort() {
-  console.log(settings.sort);
   filteredStudents = checkFilters();
   filteredStudents = checkSort(filteredStudents);
 
@@ -92,53 +95,110 @@ function prepareEventListeners() {
   const addInfoFilterBtn = document.querySelector("#additional");
   const bloodFilterBtn = document.querySelector("#blood");
   const clearFilterBtn = document.querySelector("#clear");
-  searchBtn.addEventListener("click", prepareSearch);
-  sortBtn.addEventListener("change", () => setSort(sortBtn.value));
-  sortDirectionBtn.addEventListener("click", prepareSearch);
-  houseFilterBtn.addEventListener("input", prepareSearch);
-  enrollmentFilterBtn.addEventListener("input", prepareSearch);
-  addInfoFilterBtn.addEventListener("input", prepareSearch);
-  bloodFilterBtn.addEventListener("input", prepareSearch);
-  clearFilterBtn.addEventListener("click", prepareSearch);
-}
 
-function prepareSearch() {
-  const searchBar = document.querySelector("#searchbar");
-  const searchModal = document.querySelector("#search-modal");
-  searchModal.classList.remove("hide");
-  searchBar.focus();
-  startSearch();
-  searchBar.addEventListener("input", startSearch);
-  window.addEventListener("keydown", e => {
-    if (e.keyCode === 13 || e.keyCode === 27) {
-      searchModal.classList.add("hide");
-      searchBar.value = "";
-    }
+  searchBtn.addEventListener("click", prepareSearch);
+
+  sortBtn.addEventListener("input", () => setSort(sortBtn.value));
+
+  sortDirectionBtn.addEventListener("click", changeSortDirection);
+
+  houseFilterBtn.addEventListener("input", () => {
+    settings.filterHouse = setFilter(houseFilterBtn.value, true);
+    initFilterNSort();
   });
-  function startSearch() {
-    filteredStudents = [];
-    students.forEach(student => {
-      let fullName = student.firstName;
-      if (student.middleName !== null) {
-        fullName += ` ${student.middleName}`;
-      }
-      if (student.nickName !== null) {
-        fullName += ` ${student.nickName}`;
-      }
-      fullName += ` ${student.lastName}`;
-      fullName = fullName.toLowerCase();
-      if (fullName.includes(searchBar.value.toLowerCase())) {
-        filteredStudents.push(student);
+
+  enrollmentFilterBtn.addEventListener("input", () => {
+    settings.filterEnrollment = setFilter(enrollmentFilterBtn.value);
+    initFilterNSort();
+  });
+
+  addInfoFilterBtn.addEventListener("input", () => {
+    settings.filterAddInfo = setFilter(addInfoFilterBtn.value);
+    initFilterNSort();
+  });
+
+  bloodFilterBtn.addEventListener("input", () => {
+    settings.filterBlood = setFilter(bloodFilterBtn.value);
+    initFilterNSort();
+  });
+
+  function prepareSearch() {
+    const searchBar = document.querySelector("#searchbar");
+    const searchModal = document.querySelector("#search-modal");
+    searchModal.classList.remove("hide");
+    searchBar.focus();
+    startSearch();
+    searchBar.addEventListener("input", startSearch);
+    window.addEventListener("keydown", e => {
+      if (e.keyCode === 13 || e.keyCode === 27) {
+        searchModal.classList.add("hide");
+        searchBar.value = "";
       }
     });
-    settings.filterHouse = "Gryffindor";
-    checkFilterNSort();
-  }
-}
 
-function setSort(input) {
-  settings.sort = input;
-  checkFilterNSort();
+    function startSearch() {
+      filteredStudents = [];
+      students.forEach(student => {
+        let fullName = student.firstName;
+        if (student.middleName !== null) {
+          fullName += ` ${student.middleName}`;
+        }
+        if (student.nickName !== null) {
+          fullName += ` ${student.nickName}`;
+        }
+        fullName += ` ${student.lastName}`;
+        fullName = fullName.toLowerCase();
+        if (fullName.includes(searchBar.value.toLowerCase())) {
+          filteredStudents.push(student);
+        }
+      });
+      checkFilterNSort();
+    }
+  }
+
+  function setSort(input) {
+    settings.sort = input;
+    activateClearBtn();
+    initFilterNSort();
+  }
+
+  function changeSortDirection() {
+    settings.sortDirection = settings.sortDirection === "asc" ? "desc" : "asc";
+    initFilterNSort();
+  }
+
+  function setFilter(value, marker) {
+    activateClearBtn();
+    return marker ? getCleanName(value) : value;
+  }
+
+  function activateClearBtn() {
+    clearFilterBtn.dataset.status = "enabled";
+    clearFilterBtn.addEventListener("click", resetSettings);
+    function resetSettings() {
+      clearSettings();
+      resetSelecters();
+    }
+    function clearSettings() {
+      settings.sort = null;
+      settings.filterHouse = null;
+      settings.filterBlood = null;
+      settings.filterEnrollment = null;
+      settings.filterAddInfo = null;
+      settings.sortDirection = "asc";
+      clearFilterBtn.dataset.status = "disabled";
+      initFilterNSort();
+    }
+    function resetSelecters() {
+      sortBtn.value = "default";
+      sortDirectionBtn.value = "default";
+      houseFilterBtn.value = "default";
+      enrollmentFilterBtn.value = "default";
+      addInfoFilterBtn.value = "default";
+      bloodFilterBtn.value = "default";
+      sortDirectionBtn.dataset.status = "disabled";
+    }
+  }
 }
 
 function createStudentObject(oneStudent) {
@@ -340,7 +400,6 @@ function displayList() {
 }
 
 function displayStudents(thisStudent) {
-  console.log("show");
   const template = document.querySelector("#one-student").content;
   const clone = template.cloneNode(true);
   clone.querySelector("#firstname").textContent = thisStudent.firstName;

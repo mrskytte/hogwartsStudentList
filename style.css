@@ -291,3 +291,7 @@ button[data-status="enabled"] {
   font-size: 1.6rem;
   margin: auto;
 }
+
+body {
+  background-color: var(--bg-color);
+}
