@@ -70,9 +70,16 @@ function prepareStudents(allStudents) {
 function prepareData() {
   addImgSrc();
   houseCount();
-  let currentStudentsList = checkFilters();
-  currentStudentsList = checkSort(currentStudentsList);
-  currentStudentsList.forEach(displayStudents);
+  filteredStudents = students;
+  checkFilterNSort();
+}
+
+function checkFilterNSort() {
+  console.log("called");
+  filteredStudents = checkFilters();
+  filteredStudents = checkSort(filteredStudents);
+
+  displayList();
 }
 
 function prepareEventListeners() {
@@ -84,18 +91,48 @@ function prepareEventListeners() {
   const addInfoFilterBtn = document.querySelector("#additional");
   const bloodFilterBtn = document.querySelector("#blood");
   const clearFilterBtn = document.querySelector("#clear");
-  searchBtn.addEventListener("click", startSearch);
-  sortBtn.addEventListener("input", startSearch);
-  sortDirectionBtn.addEventListener("click", startSearch);
-  houseFilterBtn.addEventListener("input", startSearch);
-  enrollmentFilterBtn.addEventListener("input", startSearch);
-  addInfoFilterBtn.addEventListener("input", startSearch);
-  bloodFilterBtn.addEventListener("input", startSearch);
-  clearFilterBtn.addEventListener("click", startSearch);
+  searchBtn.addEventListener("click", prepareSearch);
+  sortBtn.addEventListener("input", prepareSearch);
+  sortDirectionBtn.addEventListener("click", prepareSearch);
+  houseFilterBtn.addEventListener("input", prepareSearch);
+  enrollmentFilterBtn.addEventListener("input", prepareSearch);
+  addInfoFilterBtn.addEventListener("input", prepareSearch);
+  bloodFilterBtn.addEventListener("input", prepareSearch);
+  clearFilterBtn.addEventListener("click", prepareSearch);
 }
 
-function startSearch() {
-  console.log("start");
+function prepareSearch() {
+  const searchBar = document.querySelector("#searchbar");
+  const searchModal = document.querySelector("#search-modal");
+  searchModal.classList.remove("hide");
+  searchBar.focus();
+  startSearch();
+  searchBar.addEventListener("input", startSearch);
+  window.addEventListener("keydown", e => {
+    if (e.keyCode === 13 || e.keyCode === 27) {
+      searchModal.classList.add("hide");
+      searchBar.value = "";
+    }
+  });
+  function startSearch() {
+    filteredStudents = [];
+    students.forEach(student => {
+      let fullName = student.firstName;
+      if (student.middleName !== null) {
+        fullName += ` ${student.middleName}`;
+      }
+      if (student.nickName !== null) {
+        fullName += ` ${student.nickName}`;
+      }
+      fullName += ` ${student.lastName}`;
+      fullName = fullName.toLowerCase();
+      if (fullName.includes(searchBar.value.toLowerCase())) {
+        filteredStudents.push(student);
+      }
+    });
+    settings.filterHouse = "Gryffindor";
+    checkFilterNSort();
+  }
 }
 
 function createStudentObject(oneStudent) {
@@ -224,7 +261,6 @@ function houseCount() {
 }
 
 function checkFilters() {
-  filteredStudents = students;
   if (
     settings.filterHouse === null &&
     settings.filterEnrollment === null &&
@@ -277,7 +313,13 @@ function checkSort(currentStudentList) {
   return currentStudentList;
 }
 
+function displayList() {
+  document.querySelector("#studentlist").innerHTML = "";
+  filteredStudents.forEach(displayStudents);
+}
+
 function displayStudents(thisStudent) {
+  console.log("show");
   const template = document.querySelector("#one-student").content;
   const clone = template.cloneNode(true);
   clone.querySelector("#firstname").textContent = thisStudent.firstName;
