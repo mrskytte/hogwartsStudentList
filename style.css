@@ -3,7 +3,6 @@
 }
 
 * {
-  background-color: var(--bg-color);
   box-sizing: border-box;
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
@@ -41,7 +40,7 @@
   cursor: pointer;
 }
 
-.one-student:nth-child() .modal-bg {
+.modal-bg {
   display: flex;
   justify-content: center;
   align-content: center;
@@ -244,9 +243,16 @@ select:first-child {
 #sort-direction {
   border-left: none;
 }
-
+header button {
+  background-color: var(--bg-color);
+  background-image: linear-gradient(
+    to bottom,
+    var(--bg-color) 0%,
+    #dbc49a 190%
+  );
+}
 button[data-status="disabled"] {
-  color: var(--bg-color);
+  color: rgba(0, 0, 0, 0);
 }
 
 button[data-status="enabled"] {
@@ -276,4 +282,12 @@ button[data-status="enabled"] {
   grid-template-columns: 1fr 1fr;
   padding: 0 2rem 0 2rem;
   border-left: 1px solid black;
+}
+
+#searchbar {
+  text-align: center;
+  height: 5rem;
+  width: 50%;
+  font-size: 1.6rem;
+  margin: auto;
 }
