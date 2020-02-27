@@ -75,7 +75,28 @@ function prepareData() {
   currentStudentsList.forEach(displayStudents);
 }
 
-function prepareEventListeners() {}
+function prepareEventListeners() {
+  const searchBtn = document.querySelector("#search");
+  const sortBtn = document.querySelector("#sort");
+  const sortDirectionBtn = document.querySelector("#sort-direction");
+  const houseFilterBtn = document.querySelector("#house");
+  const enrollmentFilterBtn = document.querySelector("#enrollment");
+  const addInfoFilterBtn = document.querySelector("#additional");
+  const bloodFilterBtn = document.querySelector("#blood");
+  const clearFilterBtn = document.querySelector("#clear");
+  searchBtn.addEventListener("click", startSearch);
+  sortBtn.addEventListener("input", startSearch);
+  sortDirectionBtn.addEventListener("click", startSearch);
+  houseFilterBtn.addEventListener("input", startSearch);
+  enrollmentFilterBtn.addEventListener("input", startSearch);
+  addInfoFilterBtn.addEventListener("input", startSearch);
+  bloodFilterBtn.addEventListener("input", startSearch);
+  clearFilterBtn.addEventListener("click", startSearch);
+}
+
+function startSearch() {
+  console.log("start");
+}
 
 function createStudentObject(oneStudent) {
   const studName = oneStudent.fullname.trim();
@@ -247,13 +268,10 @@ function filterStudents(filterOption) {
 }
 
 function checkSort(currentStudentList) {
+  settings.sort = "firstName";
   currentStudentList.sort(compareFunction);
   function compareFunction(a, b) {
-    if (a[settings.sort] < b[settings.sort]) {
-      return -1;
-    } else {
-      return 1;
-    }
+    return a[settings.sort] < b[settings.sort] ? -1 : 1;
   }
   console.log(currentStudentList);
   return currentStudentList;
