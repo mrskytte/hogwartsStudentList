@@ -23,8 +23,8 @@
         <button id="search"><img src="https://img.icons8.com/ios-glyphs/30/000000/search.png"></button>
         <select name="sort" id="sort">
           <option value="default" disabled selected>Sort</option>
-          <option value="firstname">First Name</option>
-          <option value="lastname">Last Name</option>
+          <option value="firstName">First Name</option>
+          <option value="lastName">Last Name</option>
           <option value="house">House</option>
           <option value="bloodstatus">Blood Status</option>
         </select>
@@ -76,7 +76,7 @@
       </div>
       <div id="studentlist"></div>
     </main>
-    <div class="modal-bg hide ">
+    <div id="student-modal" class="modal-bg hide ">
       <div id="modal" data-house="Gryffindor">
         <div id="modal-header">
           <div id="student-photo">
@@ -124,7 +124,7 @@
         </div>
       </div>
     </div>
-    <div class="modal-bg hide"><input type="text" name="searchbar" id="searchbar"></div>
+    <div id="search-modal" class="modal-bg hide"><input type="text" name="searchbar" id="searchbar"></div>
     <template id="one-student">
       <article class="one-student" data-house="Gryffindor">
         <h1 class="name">

@@ -27,6 +27,7 @@ const expelled = [];
 
 const settings = {
   sort: null,
+  sortDirection: "asc",
   filterHouse: null,
   filterEnrollment: null,
   filterAddInfo: null,
@@ -75,7 +76,7 @@ function prepareData() {
 }
 
 function checkFilterNSort() {
-  console.log("called");
+  console.log(settings.sort);
   filteredStudents = checkFilters();
   filteredStudents = checkSort(filteredStudents);
 
@@ -92,7 +93,7 @@ function prepareEventListeners() {
   const bloodFilterBtn = document.querySelector("#blood");
   const clearFilterBtn = document.querySelector("#clear");
   searchBtn.addEventListener("click", prepareSearch);
-  sortBtn.addEventListener("input", prepareSearch);
+  sortBtn.addEventListener("change", () => setSort(sortBtn.value));
   sortDirectionBtn.addEventListener("click", prepareSearch);
   houseFilterBtn.addEventListener("input", prepareSearch);
   enrollmentFilterBtn.addEventListener("input", prepareSearch);
@@ -133,6 +134,11 @@ function prepareSearch() {
     settings.filterHouse = "Gryffindor";
     checkFilterNSort();
   }
+}
+
+function setSort(input) {
+  settings.sort = input;
+  checkFilterNSort();
 }
 
 function createStudentObject(oneStudent) {
@@ -304,13 +310,28 @@ function filterStudents(filterOption) {
 }
 
 function checkSort(currentStudentList) {
-  settings.sort = "firstName";
   currentStudentList.sort(compareFunction);
   function compareFunction(a, b) {
-    return a[settings.sort] < b[settings.sort] ? -1 : 1;
+    if (settings.sortDirection === "asc") {
+      return a[settings.sort] < b[settings.sort] ? -1 : 1;
+    } else {
+      return a[settings.sort] < b[settings.sort] ? 1 : -1;
+    }
   }
-  console.log(currentStudentList);
+  displaySortDirection();
   return currentStudentList;
+}
+
+function displaySortDirection() {
+  const sortDirectionBtn = document.querySelector("#sort-direction");
+  if (settings.sortDirection === "asc") {
+    sortDirectionBtn.innerHTML = "&#x2B06";
+  } else {
+    sortDirectionBtn.innerHTML = "&#x2B07";
+  }
+  if (settings.sort) {
+    sortDirectionBtn.dataset.status = "enabled";
+  }
 }
 
 function displayList() {
