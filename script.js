@@ -66,9 +66,9 @@ function prepareStudents(allStudents) {
 
 function prepareData() {
   houseCount();
-  const currentStudents = checkFilters();
-  console.log(currentStudents);
-  students.forEach(displayStudents);
+  let currentStudents = checkFilters();
+  currentStudents = checkSort(currentStudents);
+  currentStudents.forEach(displayStudents);
 }
 
 function createStudentObject(oneStudent) {
@@ -183,9 +183,6 @@ function houseCount() {
 }
 
 function checkFilters() {
-  settings.filterHouse = "Gryffindor";
-  settings.filterEnrollment = "enrolled";
-  settings.filterBlood = "muggleborn";
   filteredStudents = students;
   if (
     settings.filterHouse === null &&
@@ -227,6 +224,19 @@ function filterStudents(filterOption) {
       return false;
     }
   }
+}
+
+function checkSort(currentStudentList) {
+  currentStudentList.sort(compareFunction);
+  function compareFunction(a, b) {
+    if (a[settings.sort] < b[settings.sort]) {
+      return -1;
+    } else {
+      return 1;
+    }
+  }
+  console.log(currentStudentList);
+  return currentStudentList;
 }
 
 function displayStudents(thisStudent) {
