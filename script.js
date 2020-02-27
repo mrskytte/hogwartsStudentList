@@ -7,7 +7,7 @@ const Student = {
   middleName: null,
   nickName: null,
   gender: "",
-  image: null,
+  imageSrc: null,
   house: "",
   bloodstatus: "",
   isEnrolled: "enrolled",
@@ -34,9 +34,12 @@ const settings = {
   hacked: false
 };
 
+// arrow code down : "&#x2B07;" up &#x2B06;
+
 function init() {
   loadJSON("//petlatkea.dk/2020/hogwarts/students.json", prepareStudents);
   loadJSON("//petlatkea.dk/2020/hogwarts/families.json", storeFamilyBloodline);
+  prepareEventListeners();
 }
 
 function loadJSON(url, callback) {
@@ -65,11 +68,14 @@ function prepareStudents(allStudents) {
 }
 
 function prepareData() {
+  addImgSrc();
   houseCount();
-  let currentStudents = checkFilters();
-  currentStudents = checkSort(currentStudents);
-  currentStudents.forEach(displayStudents);
+  let currentStudentsList = checkFilters();
+  currentStudentsList = checkSort(currentStudentsList);
+  currentStudentsList.forEach(displayStudents);
 }
+
+function prepareEventListeners() {}
 
 function createStudentObject(oneStudent) {
   const studName = oneStudent.fullname.trim();
@@ -89,7 +95,7 @@ function createStudentObject(oneStudent) {
   student.nickName = null;
   // Find only nicknames and capitalize
   if (studName.indexOf(" ") + 1 == studName.indexOf('"')) {
-    student.nickName = getNickName(studName);
+    student.nickName = getNickname(studName);
   }
   // Find only middlename and capitalize
   else if (studName.indexOf(" ") !== studName.lastIndexOf(" ")) {
@@ -101,6 +107,20 @@ function createStudentObject(oneStudent) {
   student.house = getHouse(oneStudent.house);
   // Add object to array
   students.push(student);
+}
+
+function addImgSrc() {
+  students.forEach(thisStudent => {
+    if (
+      students.filter(student =>
+        student.lastName === thisStudent.lastName ? true : false
+      ).length > 1
+    ) {
+      thisStudent.imageSrc = `/assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName.toLowerCase()}`;
+    } else {
+      thisStudent.imageSrc = `/assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName[0].toLowerCase()}`;
+    }
+  });
 }
 
 function getCleanName(name) {
@@ -130,7 +150,7 @@ function getHyphenLastName(name) {
   );
 }
 
-function getNickName(name) {
+function getNickname(name) {
   let nickName = name.substring(name.indexOf('"') + 1, name.lastIndexOf('"'));
   return getCleanName(nickName);
 }
