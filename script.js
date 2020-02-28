@@ -458,7 +458,18 @@ function displayModal(currentStudent) {
       .addEventListener("click", togglePrefectStatus);
 
     function togglePrefectStatus() {
-      currentStudent.isPrefect = currentStudent.isPrefect ? false : true;
+      const otherPrefect = students.filter(student =>
+        student.isPrefect &&
+        student.house === currentStudent.house &&
+        student.gender === currentStudent.gender
+          ? true
+          : false
+      );
+      if (otherPrefect.length === 0 || currentStudent.isPrefect) {
+        currentStudent.isPrefect = currentStudent.isPrefect ? false : true;
+      } else {
+        displayPrefectWarning(currentStudent, otherPrefect[0]);
+      }
       removeEventListeners();
       displayModal(currentStudent);
     }
@@ -468,14 +479,13 @@ function displayModal(currentStudent) {
       .addEventListener("click", toggleSquadStatus);
 
     function toggleSquadStatus() {
-      console.log("clicked");
       if (
         currentStudent.house === "Slytherin" ||
         currentStudent.bloodstatus === "Pure-Blood"
       ) {
         currentStudent.isSquad = currentStudent.isSquad ? false : true;
       } else {
-        notEligible();
+        displaySquadWarning();
       }
       removeEventListeners();
       displayModal(currentStudent);
@@ -514,12 +524,57 @@ function displayModal(currentStudent) {
   }
 }
 
-function notEligible() {
+function displaySquadWarning() {
   const squadWarning = document.querySelector("#squadwarning");
   squadWarning.classList.remove("hide");
   squadWarning
     .querySelector("button")
     .addEventListener("click", () => squadWarning.classList.add("hide"));
+}
+
+function displayPrefectWarning(currentStudent, otherPrefect) {
+  const prefectWarning = document.querySelector("#prefectwarning");
+  prefectWarning.classList.remove("hide");
+  prefectWarning.querySelector("#currentprefect").textContent =
+    otherPrefect.fullName;
+  prefectWarning.querySelector("#prefectgender").textContent =
+    otherPrefect.gender;
+  prefectWarning.querySelector("#prefecthouse").textContent =
+    otherPrefect.house;
+  prefectWarning.querySelector("#newprefectname").textContent =
+    currentStudent.fullName;
+  prefectWarning.querySelector("#currentprefectname").textContent =
+    otherPrefect.fullName;
+
+  preparePrefectBtns(currentStudent, otherPrefect, prefectWarning);
+}
+
+function preparePrefectBtns(newPrefect, oldPrefect, prefectWarning) {
+  document
+    .querySelector("#choosenewprefect")
+    .addEventListener("click", chooseNewPrefect);
+  document
+    .querySelector("#keepoldprefect")
+    .addEventListener("click", keepOldPrefect);
+  function chooseNewPrefect() {
+    newPrefect.isPrefect = true;
+    oldPrefect.isPrefect = false;
+    prefectWarning.classList.add("hide");
+    displayModal(newPrefect);
+    removeEventListeners();
+  }
+  function keepOldPrefect() {
+    prefectWarning.classList.add("hide");
+    removeEventListeners();
+  }
+  function removeEventListeners() {
+    document
+      .querySelector("#choosenewprefect")
+      .removeEventListener("click", chooseNewPrefect);
+    document
+      .querySelector("#keepoldprefect")
+      .removeEventListener("click", keepOldPrefect);
+  }
 }
 
 function checkAdditionalData(modal, currentStudent) {
