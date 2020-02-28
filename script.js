@@ -2,6 +2,7 @@
 window.addEventListener("DOMContentLoaded", init);
 
 const Student = {
+  fullName: "",
   firstName: "",
   lastName: "",
   middleName: null,
@@ -11,8 +12,8 @@ const Student = {
   house: "",
   bloodstatus: "",
   isEnrolled: "enrolled",
-  isSquad: null,
-  isPrefect: null
+  isSquad: true,
+  isPrefect: false
 };
 
 let countFiles = 0;
@@ -139,15 +140,7 @@ function prepareEventListeners() {
     function startSearch() {
       filteredStudents = [];
       students.forEach(student => {
-        let fullName = student.firstName;
-        if (student.middleName !== null) {
-          fullName += ` ${student.middleName}`;
-        }
-        if (student.nickName !== null) {
-          fullName += ` ${student.nickName}`;
-        }
-        fullName += ` ${student.lastName}`;
-        fullName = fullName.toLowerCase();
+        student.fullName = fullName.toLowerCase();
         if (fullName.includes(searchBar.value.toLowerCase())) {
           filteredStudents.push(student);
         }
@@ -225,6 +218,16 @@ function createStudentObject(oneStudent) {
   else if (studName.indexOf(" ") !== studName.lastIndexOf(" ")) {
     student.middleName = getMiddleName(studName);
   }
+  // Set full clean name
+  let fullName = student.firstName;
+  if (student.middleName !== null) {
+    fullName += ` ${student.middleName}`;
+  }
+  if (student.nickName !== null) {
+    fullName += ` ${student.nickName}`;
+  }
+  fullName += ` ${student.lastName}`;
+  student.fullName = fullName;
   // Determine whether it's a boy or girl
   student.gender = getGender(oneStudent.gender);
   // Determine which house they belong to
@@ -240,9 +243,11 @@ function addImgSrc() {
         student.lastName === thisStudent.lastName ? true : false
       ).length > 1
     ) {
-      thisStudent.imageSrc = `/assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName.toLowerCase()}`;
+      thisStudent.imageSrc = `/assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName.toLowerCase()}.png`;
+    } else if (thisStudent.lastName === "") {
+      thisStudent.imageSrc = `/assets/hogwarts.png`;
     } else {
-      thisStudent.imageSrc = `/assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName[0].toLowerCase()}`;
+      thisStudent.imageSrc = `/assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName[0].toLowerCase()}.png`;
     }
   });
 }
@@ -307,10 +312,10 @@ function getHouse(house) {
 function checkBloodline() {
   students.forEach(student => {
     bloodLines.half.includes(student.lastName)
-      ? (student.bloodstatus = "half")
+      ? (student.bloodstatus = "Half-Blood")
       : bloodLines.pure.includes(student.lastName)
-      ? (student.bloodstatus = "pure")
-      : (student.bloodstatus = "muggleborn");
+      ? (student.bloodstatus = "Pure-Blood")
+      : (student.bloodstatus = "Muggle-Born");
   });
 }
 
@@ -412,21 +417,115 @@ function displayStudents(thisStudent) {
   document.querySelector("#studentlist").appendChild(clone);
 }
 
-function modal(clickedStudent) {
-  // const modal = document.querySelector(".modal");
-  // modal.querySelector("#firstname").textContent = clickedStudent.firstName;
-  // modal.querySelector("#nickname").textContent = clickedStudent.nickName;
-  // modal.querySelector("#middlename").textContent = clickedStudent.middleName;
-  // modal.querySelector("#lastname").textContent = clickedStudent.lastName;
-  // modal.querySelector("#gender").textContent = clickedStudent.gender;
-  // modal.querySelector(".modal-house").textContent = clickedStudent.house;
-  // modal.dataset.house = clickedStudent.house;
-  // // modal
-  // //   .querySelector("img")
-  // //   .setAttribute("src", "assets/" + clickedStudent.house + ".png");
+function modal(cs) {
+  const modal = document.querySelector("#modal");
+  resetModal(modal);
+  setBaseInfo(modal, cs);
+  checkAdditionalData(modal, cs);
+
   const modalBg = document.querySelector(".modal-bg");
   modalBg.classList.remove("hide");
   modalBg.addEventListener("click", e => {
     modalBg.classList.add("hide");
   });
+}
+
+function checkAdditionalData(modal, cs) {
+  if (cs.isPrefect) {
+    setPrefectText(modal, true);
+  } else {
+    setPrefectText(modal, false);
+  }
+  if (cs.isSquad) {
+    setSquadText(modal, true);
+  } else {
+    setSquadText(modal, false);
+  }
+  if (cs.isEnrolled === "enrolled") {
+    setEnrolledText(modal, true);
+  } else {
+    setEnrolledText(modal, false);
+  }
+}
+
+function setPrefectText(modal, status) {
+  if (status) {
+    modal.querySelector("#prefect-status p").textContent =
+      "This Student is a Prefect";
+    modal.querySelector("#prefect-button").textContent = "Demote from Prefect";
+  } else {
+    modal.querySelector("#prefect-status p").textContent =
+      "This Student is not a Prefect";
+    modal.querySelector("#prefect-button").textContent = "Promote to Prefect";
+  }
+}
+
+function setSquadText(modal, status) {
+  if (status) {
+    modal.querySelector("#squad-status p").textContent =
+      "This Student is a Member of the Inguisitorial Squad";
+    modal.querySelector("#squad-button").textContent = "Revoke Membership";
+  } else {
+    modal.querySelector("#squad-status p").textContent =
+      "This Student is not a Member of the Inguisitorial Squad";
+    modal.querySelector("#squad-button").textContent = "Grant Membership";
+  }
+}
+
+function setEnrolledText(modal, status) {
+  if (status) {
+    modal.querySelector("#enrolled-status p").textContent =
+      "This Student is Currently Enrolled at Hogwarts";
+    modal.querySelector("#enrollment-button").textContent = "Expel Student";
+  } else {
+    modal.querySelector("#enrolled-status p").textContent =
+      "This Student has been Expelled from Hogwarts";
+    modal.querySelector("#enrollment-button").textContent = "Re-Admit Student";
+  }
+}
+
+function setBaseInfo(modal, cs) {
+  modal.querySelector("#student-name").textContent = cs.fullName;
+  modal.querySelector("#first-name").textContent = cs.firstName;
+  if (!cs.nickName) {
+    console.log("no nickname");
+    modal.querySelector("#nickname").classList.add("hide");
+    modal.querySelector("#nick-title").classList.add("hide");
+  } else {
+    console.log("nickname");
+    modal.querySelector("#nickname").textContent = cs.nickName;
+  }
+  if (!cs.middleName) {
+    console.log("no middlename");
+    modal.querySelector("#middle-name").classList.add("hide");
+    modal.querySelector("#middle-title").classList.add("hide");
+  } else {
+    console.log("middlename");
+    modal.querySelector("#middle-name").textContent = cs.middleName;
+  }
+  if (!cs.lastName) {
+    console.log("no lastname");
+    modal.querySelector("#last-name").classList.add("hide");
+    modal.querySelector("#last-title").classList.add("hide");
+  } else {
+    console.log("lastname");
+    modal.querySelector("#last-name").textContent = cs.lastName;
+  }
+  modal.querySelector("#last-name").textContent = cs.lastName;
+  modal.querySelector("#gender").textContent = cs.gender;
+  modal
+    .querySelector("#housecrest img")
+    .setAttribute("src", `assets/${cs.house}.png`);
+  modal.dataset.house = cs.house;
+  modal.querySelector("#student-photo img").setAttribute("src", cs.imageSrc);
+  modal.querySelector("#blood-status").textContent = cs.bloodstatus;
+}
+
+function resetModal(modal) {
+  modal.querySelector("#nickname").classList.remove("hide");
+  modal.querySelector("#nick-title").classList.remove("hide");
+  modal.querySelector("#middle-name").classList.remove("hide");
+  modal.querySelector("#middle-title").classList.remove("hide");
+  modal.querySelector("#last-name").classList.remove("hide");
+  modal.querySelector("#last-title").classList.remove("hide");
 }
