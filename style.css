@@ -295,3 +295,36 @@ button[data-status="enabled"] {
 body {
   background-color: var(--bg-color);
 }
+
+.modal-bg .warning {
+  text-align: center;
+  height: 30%;
+  width: 60%;
+  background-color: var(--bg-color);
+  margin: auto;
+  padding: 2rem;
+  border-radius: 5px;
+}
+
+#squadwarning h1 {
+  text-align: left;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+#squadwarning h2 {
+  text-align: left;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+#squadwarning button {
+  margin-top: 1rem;
+  font-size: 1rem;
+  background-color: var(--bg-color);
+  background-image: linear-gradient(
+    to bottom,
+    var(--bg-color) 0%,
+    #dbc49a 190%
+  );
+}
