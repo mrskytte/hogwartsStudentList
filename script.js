@@ -12,7 +12,7 @@ const Student = {
   house: "",
   bloodstatus: "",
   isEnrolled: "enrolled",
-  isSquad: true,
+  isSquad: false,
   isPrefect: false
 };
 
@@ -401,7 +401,6 @@ function displaySortDirection() {
 }
 
 function displayInit() {
-  console.log("called");
   displayList();
   displayAboutNumbers();
 }
@@ -448,56 +447,79 @@ function displayModal(currentStudent) {
   setBaseInfo(modal, currentStudent);
   checkAdditionalData(modal, currentStudent);
 
-  activateModalBtns(modal, currentStudent);
+  activateModalBtns();
 
   const modalBg = document.querySelector(".modal-bg");
   modalBg.classList.remove("hide");
-  modal.querySelector("#close").addEventListener("click", closeModal);
 
-  function closeModal() {
-    modalBg.classList.add("hide");
-    modal.querySelector("#close").removeEventListener("click", closeModal);
+  function activateModalBtns() {
+    modal
+      .querySelector("#prefect-button")
+      .addEventListener("click", togglePrefectStatus);
+
+    function togglePrefectStatus() {
+      currentStudent.isPrefect = currentStudent.isPrefect ? false : true;
+      removeEventListeners();
+      displayModal(currentStudent);
+    }
+
+    modal
+      .querySelector("#squad-button")
+      .addEventListener("click", toggleSquadStatus);
+
+    function toggleSquadStatus() {
+      console.log("clicked");
+      if (
+        currentStudent.house === "Slytherin" ||
+        currentStudent.bloodstatus === "Pure-Blood"
+      ) {
+        currentStudent.isSquad = currentStudent.isSquad ? false : true;
+      } else {
+        notEligible();
+      }
+      removeEventListeners();
+      displayModal(currentStudent);
+    }
+
+    modal
+      .querySelector("#enrollment-button")
+      .addEventListener("click", toggleEnrollmentStatus);
+
+    function toggleEnrollmentStatus() {
+      currentStudent.isEnrolled =
+        currentStudent.isEnrolled === "enrolled" ? "expelled" : "enrolled";
+      removeEventListeners();
+      displayModal(currentStudent);
+    }
+
+    function removeEventListeners() {
+      modal
+        .querySelector("#prefect-button")
+        .removeEventListener("click", togglePrefectStatus);
+      modal
+        .querySelector("#squad-button")
+        .removeEventListener("click", toggleSquadStatus);
+      modal
+        .querySelector("#enrollment-button")
+        .removeEventListener("click", toggleEnrollmentStatus);
+    }
+
+    modal.querySelector("#close").addEventListener("click", closeModal);
+
+    function closeModal() {
+      modalBg.classList.add("hide");
+      modal.querySelector("#close").removeEventListener("click", closeModal);
+      removeEventListeners();
+    }
   }
 }
 
-function activateModalBtns(modal, currentStudent) {
-  modal
-    .querySelector("#prefect-button")
-    .addEventListener("click", togglePrefectStatus);
-  function togglePrefectStatus() {
-    currentStudent.isPrefect = currentStudent.isPrefect ? false : true;
-    removeEventListeners();
-    displayModal(currentStudent);
-  }
-  modal
-    .querySelector("#squad-button")
-    .addEventListener("click", toggleSquadStatus);
-  function toggleSquadStatus() {
-    currentStudent.isSquad = currentStudent.isSquad ? false : true;
-    removeEventListeners();
-    displayModal(currentStudent);
-  }
-  modal
-    .querySelector("#enrollment-button")
-    .addEventListener("click", toggleEnrollmentStatus);
-  function toggleEnrollmentStatus() {
-    currentStudent.isEnrolled =
-      currentStudent.isEnrolled === "enrolled" ? "expelled" : "enrolled";
-    removeEventListeners();
-    displayModal(currentStudent);
-  }
-
-  function removeEventListeners() {
-    modal
-      .querySelector("#prefect-button")
-      .removeEventListener("click", togglePrefectStatus);
-    modal
-      .querySelector("#squad-button")
-      .removeEventListener("click", toggleSquadStatus);
-    modal
-      .querySelector("#enrollment-button")
-      .removeEventListener("click", toggleEnrollmentStatus);
-  }
+function notEligible() {
+  const squadWarning = document.querySelector("#squadwarning");
+  squadWarning.classList.remove("hide");
+  squadWarning
+    .querySelector("button")
+    .addEventListener("click", () => squadWarning.classList.add("hide"));
 }
 
 function checkAdditionalData(modal, currentStudent) {
