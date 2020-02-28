@@ -18,6 +18,7 @@ const Student = {
 
 let countFiles = 0;
 const students = [];
+const expelledStudents = [];
 let filteredStudents;
 const bloodLines = { half: [], pure: [] };
 let gryffindorStudents = 0;
@@ -41,7 +42,7 @@ const settings = {
 function init() {
   loadJSON("//petlatkea.dk/2020/hogwarts/students.json", prepareStudents);
   loadJSON("//petlatkea.dk/2020/hogwarts/families.json", storeFamilyBloodline);
-  prepareEventListeners();
+  prepareSettingsNSearch();
 }
 
 function loadJSON(url, callback) {
@@ -84,10 +85,10 @@ function checkFilterNSort() {
   filteredStudents = checkFilters();
   filteredStudents = checkSort(filteredStudents);
 
-  displayList();
+  displayInit();
 }
 
-function prepareEventListeners() {
+function prepareSettingsNSearch() {
   const searchBtn = document.querySelector("#search");
   const sortBtn = document.querySelector("#sort");
   const sortDirectionBtn = document.querySelector("#sort-direction");
@@ -140,7 +141,7 @@ function prepareEventListeners() {
     function startSearch() {
       filteredStudents = [];
       students.forEach(student => {
-        student.fullName = fullName.toLowerCase();
+        let fullName = student.fullName.toLowerCase();
         if (fullName.includes(searchBar.value.toLowerCase())) {
           filteredStudents.push(student);
         }
@@ -399,6 +400,30 @@ function displaySortDirection() {
   }
 }
 
+function displayInit() {
+  console.log("called");
+  displayList();
+  displayAboutNumbers();
+}
+
+function displayAboutNumbers() {
+  const gryfNumber = document.querySelector("#gryfnumber");
+  const huffleNumber = document.querySelector("#hufflenumber");
+  const ravenNumber = document.querySelector("#ravennumber");
+  const slythNumber = document.querySelector("#slythnumber");
+  const enrolledNumber = document.querySelector("#enrollednumber");
+  const expelledNumber = document.querySelector("#expellednumber");
+  const displayedNumber = document.querySelector("#displayednumber");
+
+  gryfNumber.textContent = gryffindorStudents;
+  huffleNumber.textContent = hufflepuffStudents;
+  ravenNumber.textContent = ravenclawStudents;
+  slythNumber.textContent = slytherinStudents;
+  enrolledNumber.textContent = students.length;
+  expelledNumber.textContent = expelledStudents.length;
+  displayedNumber.textContent = filteredStudents.length;
+}
+
 function displayList() {
   document.querySelector("#studentlist").innerHTML = "";
   filteredStudents.forEach(displayStudents);
@@ -412,36 +437,81 @@ function displayStudents(thisStudent) {
   clone.querySelector("#middlename").textContent = thisStudent.middleName;
   clone.querySelector("#lastname").textContent = thisStudent.lastName;
   clone.querySelector("article").addEventListener("click", function() {
-    modal(thisStudent);
+    displayModal(thisStudent);
   });
   document.querySelector("#studentlist").appendChild(clone);
 }
 
-function modal(cs) {
+function displayModal(currentStudent) {
   const modal = document.querySelector("#modal");
   resetModal(modal);
-  setBaseInfo(modal, cs);
-  checkAdditionalData(modal, cs);
+  setBaseInfo(modal, currentStudent);
+  checkAdditionalData(modal, currentStudent);
+
+  activateModalBtns(modal, currentStudent);
 
   const modalBg = document.querySelector(".modal-bg");
   modalBg.classList.remove("hide");
-  modalBg.addEventListener("click", e => {
+  modal.querySelector("#close").addEventListener("click", closeModal);
+
+  function closeModal() {
     modalBg.classList.add("hide");
-  });
+    modal.querySelector("#close").removeEventListener("click", closeModal);
+  }
 }
 
-function checkAdditionalData(modal, cs) {
-  if (cs.isPrefect) {
+function activateModalBtns(modal, currentStudent) {
+  modal
+    .querySelector("#prefect-button")
+    .addEventListener("click", togglePrefectStatus);
+  function togglePrefectStatus() {
+    currentStudent.isPrefect = currentStudent.isPrefect ? false : true;
+    removeEventListeners();
+    displayModal(currentStudent);
+  }
+  modal
+    .querySelector("#squad-button")
+    .addEventListener("click", toggleSquadStatus);
+  function toggleSquadStatus() {
+    currentStudent.isSquad = currentStudent.isSquad ? false : true;
+    removeEventListeners();
+    displayModal(currentStudent);
+  }
+  modal
+    .querySelector("#enrollment-button")
+    .addEventListener("click", toggleEnrollmentStatus);
+  function toggleEnrollmentStatus() {
+    currentStudent.isEnrolled =
+      currentStudent.isEnrolled === "enrolled" ? "expelled" : "enrolled";
+    removeEventListeners();
+    displayModal(currentStudent);
+  }
+
+  function removeEventListeners() {
+    modal
+      .querySelector("#prefect-button")
+      .removeEventListener("click", togglePrefectStatus);
+    modal
+      .querySelector("#squad-button")
+      .removeEventListener("click", toggleSquadStatus);
+    modal
+      .querySelector("#enrollment-button")
+      .removeEventListener("click", toggleEnrollmentStatus);
+  }
+}
+
+function checkAdditionalData(modal, currentStudent) {
+  if (currentStudent.isPrefect) {
     setPrefectText(modal, true);
   } else {
     setPrefectText(modal, false);
   }
-  if (cs.isSquad) {
+  if (currentStudent.isSquad) {
     setSquadText(modal, true);
   } else {
     setSquadText(modal, false);
   }
-  if (cs.isEnrolled === "enrolled") {
+  if (currentStudent.isEnrolled === "enrolled") {
     setEnrolledText(modal, true);
   } else {
     setEnrolledText(modal, false);
@@ -484,41 +554,37 @@ function setEnrolledText(modal, status) {
   }
 }
 
-function setBaseInfo(modal, cs) {
-  modal.querySelector("#student-name").textContent = cs.fullName;
-  modal.querySelector("#first-name").textContent = cs.firstName;
-  if (!cs.nickName) {
-    console.log("no nickname");
+function setBaseInfo(modal, currentStudent) {
+  modal.querySelector("#student-name").textContent = currentStudent.fullName;
+  modal.querySelector("#first-name").textContent = currentStudent.firstName;
+  if (!currentStudent.nickName) {
     modal.querySelector("#nickname").classList.add("hide");
     modal.querySelector("#nick-title").classList.add("hide");
   } else {
-    console.log("nickname");
-    modal.querySelector("#nickname").textContent = cs.nickName;
+    modal.querySelector("#nickname").textContent = currentStudent.nickName;
   }
-  if (!cs.middleName) {
-    console.log("no middlename");
+  if (!currentStudent.middleName) {
     modal.querySelector("#middle-name").classList.add("hide");
     modal.querySelector("#middle-title").classList.add("hide");
   } else {
-    console.log("middlename");
-    modal.querySelector("#middle-name").textContent = cs.middleName;
+    modal.querySelector("#middle-name").textContent = currentStudent.middleName;
   }
-  if (!cs.lastName) {
-    console.log("no lastname");
+  if (!currentStudent.lastName) {
     modal.querySelector("#last-name").classList.add("hide");
     modal.querySelector("#last-title").classList.add("hide");
   } else {
-    console.log("lastname");
-    modal.querySelector("#last-name").textContent = cs.lastName;
+    modal.querySelector("#last-name").textContent = currentStudent.lastName;
   }
-  modal.querySelector("#last-name").textContent = cs.lastName;
-  modal.querySelector("#gender").textContent = cs.gender;
+  modal.querySelector("#last-name").textContent = currentStudent.lastName;
+  modal.querySelector("#gender").textContent = currentStudent.gender;
   modal
     .querySelector("#housecrest img")
-    .setAttribute("src", `assets/${cs.house}.png`);
-  modal.dataset.house = cs.house;
-  modal.querySelector("#student-photo img").setAttribute("src", cs.imageSrc);
-  modal.querySelector("#blood-status").textContent = cs.bloodstatus;
+    .setAttribute("src", `assets/${currentStudent.house}.png`);
+  modal.dataset.house = currentStudent.house;
+  modal
+    .querySelector("#student-photo img")
+    .setAttribute("src", currentStudent.imageSrc);
+  modal.querySelector("#blood-status").textContent = currentStudent.bloodstatus;
 }
 
 function resetModal(modal) {
