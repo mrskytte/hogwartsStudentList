@@ -126,11 +126,19 @@
         </div>
       </div>
     </div>
-    <div id="squadwarning" class="modal-bg">
+    <div id="squadwarning" class="modal-bg hide">
       <div class="warning">
         <h1>This student is not eligible for the Inguisitorial Squad</h1>
         <h2>Only Pure-Bloods or students of Slytherin are allowed</h2>
-        <button id="closesquadwarning">Close</button>
+        <button id="closesquadwarning" class="warningbuttons">Close</button>
+      </div>
+    </div>
+    <div id="prefectwarning" class="modal-bg">
+      <div class="warning">
+        <h1><span id="currentprefect">Hermoine Granger</span> is currently the <span id="prefectgender">Witch</span> prefect from <span id="prefecthouse">Gryffindor</span></h1>
+        <h2>Each House can only have one Wizard Prefect and one Witch Prefect at a time</h2>
+        <button id="choosenewprefect" class="warningbuttons">Choose <span id="newprefectname">Harry Potter</span> as Prefect</button>
+        <button id="keepoldprefect" class="warningbuttons">Keep <span id="currentprefectname">Hermoine Granger</span> as Prefect</button>
       </div>
     </div>
     <div id="search-modal" class="modal-bg hide"><input type="text" name="searchbar" id="searchbar"></div>
