@@ -327,4 +327,5 @@ body {
     var(--bg-color) 0%,
     #dbc49a 190%
   );
+  cursor: pointer;
 }
