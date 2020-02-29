@@ -13,7 +13,8 @@ const Student = {
   bloodstatus: "",
   isEnrolled: "enrolled",
   isSquad: false,
-  isPrefect: false
+  isPrefect: false,
+  isHacker: false
 };
 
 let countFiles = 0;
@@ -141,13 +142,20 @@ function prepareSettingsNSearch() {
     });
 
     function startSearch() {
-      filteredStudents = [];
-      enrolledStudents.forEach(student => {
-        let fullName = student.fullName.toLowerCase();
-        if (fullName.includes(searchBar.value.toLowerCase())) {
-          filteredStudents.push(student);
-        }
-      });
+      let searchValue = searchBar.value.toLowerCase();
+      console.log(searchValue);
+      if (searchValue === "i solemnly swear that i am up to no good") {
+        filteredStudents = enrolledStudents;
+        hackTheSystem();
+      } else {
+        filteredStudents = [];
+        enrolledStudents.forEach(student => {
+          let fullName = student.fullName.toLowerCase();
+          if (fullName.includes(searchValue)) {
+            filteredStudents.push(student);
+          }
+        });
+      }
       checkFilterNSort();
     }
   }
@@ -313,13 +321,24 @@ function getHouse(house) {
 }
 
 function checkBloodline() {
-  enrolledStudents.forEach(student => {
-    bloodLines.half.includes(student.lastName)
-      ? (student.bloodstatus = "Half-Blood")
-      : bloodLines.pure.includes(student.lastName)
-      ? (student.bloodstatus = "Pure-Blood")
-      : (student.bloodstatus = "Muggle-Born");
-  });
+  if (settings.hacked) {
+    enrolledStudents.forEach(student => {
+      const randomNumber = Math.floor(Math.random() * 2);
+      if (bloodLines.pure.includes(student.lastName)) {
+        student.bloodstatus = randomNumber === 0 ? "Half-Blood" : "Muggle-Born";
+      } else {
+        student.bloodstatus = "Pure-Blood";
+      }
+    });
+  } else {
+    enrolledStudents.forEach(student => {
+      bloodLines.half.includes(student.lastName)
+        ? (student.bloodstatus = "Half-Blood")
+        : bloodLines.pure.includes(student.lastName)
+        ? (student.bloodstatus = "Pure-Blood")
+        : (student.bloodstatus = "Muggle-Born");
+    });
+  }
 }
 
 function houseCount() {
@@ -490,9 +509,13 @@ function displayModal(currentStudent) {
         currentStudent.bloodstatus === "Pure-Blood"
       ) {
         currentStudent.isSquad = currentStudent.isSquad ? false : true;
+        if (settings.hacked) {
+          setTimeout(displaySquadWarning, 1000);
+        }
       } else {
         displaySquadWarning();
       }
+
       removeEventListeners();
       displayModal(currentStudent);
     }
@@ -503,11 +526,12 @@ function displayModal(currentStudent) {
 
     function toggleEnrollmentStatus() {
       if (currentStudent.isEnrolled === "enrolled") {
-        expelStudent(currentStudent);
+        currentStudent.isHacker
+          ? displayHackerWarning()
+          : expelStudent(currentStudent);
       } else {
         readmitStudent(currentStudent);
       }
-
       removeEventListeners();
       displayModal(currentStudent);
       displayInit();
@@ -533,6 +557,35 @@ function displayModal(currentStudent) {
       removeEventListeners();
     }
   }
+
+  function displaySquadWarning() {
+    const squadWarning = document.querySelector("#squadwarning");
+    if (settings.hacked) {
+      squadWarning.querySelector("h1").textContent =
+        "The Inquisitorial Squad has been desolved due to sucking to much";
+      squadWarning.querySelector("h2").textContent =
+        "Dumbledore's Army send their regards";
+      currentStudent.isSquad = false;
+      displayModal(currentStudent);
+    }
+    squadWarning.classList.remove("hide");
+    squadWarning.querySelector("button").addEventListener("click", () => {
+      squadWarning.classList.add("hide");
+      squadWarning.querySelector("h1").textContent =
+        "This student is not eligible for the Inguisitorial Squad";
+      squadWarning.querySelector("h2").textContent =
+        "Only Pure-Bloods or students of Slytherin are allowed";
+    });
+  }
+}
+
+function displayHackerWarning() {
+  document.querySelector("#hackerwarning").classList.remove("hide");
+  document
+    .querySelector("#closehackerwarning")
+    .addEventListener("click", () =>
+      document.querySelector("#hackerwarning").classList.add("hide")
+    );
 }
 
 function checkEnrollmentStatus(currentStudent) {
@@ -572,14 +625,6 @@ function expelStudent(currentStudent) {
   }
   currentStudent.isEnrolled = "expelled";
   document.querySelector("#student-modal").dataset.enrolmentstatus = "expelled";
-}
-
-function displaySquadWarning() {
-  const squadWarning = document.querySelector("#squadwarning");
-  squadWarning.classList.remove("hide");
-  squadWarning
-    .querySelector("button")
-    .addEventListener("click", () => squadWarning.classList.add("hide"));
 }
 
 function displayPrefectWarning(currentStudent, otherPrefect) {
@@ -721,4 +766,32 @@ function resetModal(modal) {
   modal.querySelector("#middle-title").classList.remove("hide");
   modal.querySelector("#last-name").classList.remove("hide");
   modal.querySelector("#last-title").classList.remove("hide");
+}
+
+function hackTheSystem() {
+  if (!settings.hacked) {
+    settings.hacked = true;
+    injectHackerToSystem();
+    removeAllFromSquad();
+    displayInit();
+  }
+}
+
+function injectHackerToSystem() {
+  const student = Object.create(Student);
+  student.firstName = "Christoffer";
+  student.middleName = "Skytte";
+  student.nickName = "Hackerman";
+  student.lastName = "Wielsøe";
+  student.fullName = "Christoffer Skytte Wielsøe";
+  student.house = "Hufflepuff";
+  student.gender = "Wizard";
+  student.bloodstatus = "Pure-Blood";
+  student.imageSrc = "assets/images/hackerman.png";
+  student.isHacker = true;
+  enrolledStudents.push(student);
+}
+
+function removeAllFromSquad() {
+  enrolledStudents.forEach(student => (student.isSquad = false));
 }
