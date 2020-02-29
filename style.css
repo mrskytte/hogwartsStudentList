@@ -329,3 +329,19 @@ body {
   );
   cursor: pointer;
 }
+
+#student-modal[data-enrolmentstatus="expelled"] #modal-header,
+#student-modal[data-enrolmentstatus="expelled"] #modal-body div {
+  transition: filter 1s;
+  filter: grayscale(90%);
+}
+
+#student-modal[data-enrolmentstatus="expelled"] #modal-body div:last-child {
+  transition: filter 1s;
+  filter: grayscale(0%);
+}
+
+#student-modal[data-enrolmentstatus="expelled"] #modal-body div:last-child p {
+  transition: filter 1s;
+  filter: grayscale(90%);
+}
