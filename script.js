@@ -17,8 +17,8 @@ const Student = {
 };
 
 let countFiles = 0;
-const students = [];
-const expelledStudents = [];
+let enrolledStudents = [];
+let expelledStudents = [];
 let filteredStudents;
 const bloodLines = { half: [], pure: [] };
 let gryffindorStudents = 0;
@@ -31,13 +31,11 @@ const settings = {
   sort: null,
   sortDirection: "asc",
   filterHouse: null,
-  filterEnrollment: null,
+  filterEnrollment: "enrolled",
   filterAddInfo: null,
   filterBlood: null,
   hacked: false
 };
-
-// arrow code down : "&#x2B07;" up &#x2B06;
 
 function init() {
   loadJSON("//petlatkea.dk/2020/hogwarts/students.json", prepareStudents);
@@ -77,7 +75,11 @@ function prepareData() {
 }
 
 function initFilterNSort() {
-  filteredStudents = students;
+  filteredStudents =
+    settings.filterEnrollment === "enrolled"
+      ? enrolledStudents
+      : expelledStudents;
+  console.log(filteredStudents);
   checkFilterNSort();
 }
 
@@ -140,7 +142,7 @@ function prepareSettingsNSearch() {
 
     function startSearch() {
       filteredStudents = [];
-      students.forEach(student => {
+      enrolledStudents.forEach(student => {
         let fullName = student.fullName.toLowerCase();
         if (fullName.includes(searchBar.value.toLowerCase())) {
           filteredStudents.push(student);
@@ -177,7 +179,7 @@ function prepareSettingsNSearch() {
       settings.sort = null;
       settings.filterHouse = null;
       settings.filterBlood = null;
-      settings.filterEnrollment = null;
+      settings.filterEnrollment = "enrolled";
       settings.filterAddInfo = null;
       settings.sortDirection = "asc";
       clearFilterBtn.dataset.status = "disabled";
@@ -234,13 +236,13 @@ function createStudentObject(oneStudent) {
   // Determine which house they belong to
   student.house = getHouse(oneStudent.house);
   // Add object to array
-  students.push(student);
+  enrolledStudents.push(student);
 }
 
 function addImgSrc() {
-  students.forEach(thisStudent => {
+  enrolledStudents.forEach(thisStudent => {
     if (
-      students.filter(student =>
+      enrolledStudents.filter(student =>
         student.lastName === thisStudent.lastName ? true : false
       ).length > 1
     ) {
@@ -292,9 +294,9 @@ function getMiddleName(name) {
 
 function getGender(gender) {
   if (gender === "boy") {
-    return "Boy";
+    return "Wizard";
   } else {
-    return "Girl";
+    return "Witch";
   }
 }
 
@@ -311,7 +313,7 @@ function getHouse(house) {
 }
 
 function checkBloodline() {
-  students.forEach(student => {
+  enrolledStudents.forEach(student => {
     bloodLines.half.includes(student.lastName)
       ? (student.bloodstatus = "Half-Blood")
       : bloodLines.pure.includes(student.lastName)
@@ -321,7 +323,7 @@ function checkBloodline() {
 }
 
 function houseCount() {
-  students.forEach(student => {
+  enrolledStudents.forEach(student => {
     student.house === "Gryffindor"
       ? gryffindorStudents++
       : student.house === "Hufflepuff"
@@ -335,7 +337,6 @@ function houseCount() {
 function checkFilters() {
   if (
     settings.filterHouse === null &&
-    settings.filterEnrollment === null &&
     settings.filterBlood === null &&
     settings.filterAddInfo === null
   ) {
@@ -350,8 +351,15 @@ function checkFilters() {
     if (settings.filterBlood !== null) {
       filteredStudents = filterStudents(settings.filterBlood);
     }
-    if (settings.filterAddInfo !== null) {
-      filteredStudents = filterStudents(settings.filterAddInfo);
+    if (settings.filterAddInfo === "prefects") {
+      filteredStudents = filteredStudents.filter(student =>
+        student.isPrefect ? true : false
+      );
+    }
+    if (settings.filterAddInfo === "squad") {
+      filteredStudents = filteredStudents.filter(student =>
+        student.isSquad ? true : false
+      );
     }
     return filteredStudents;
   }
@@ -364,9 +372,7 @@ function filterStudents(filterOption) {
     if (
       student.house === filterOption ||
       student.isEnrolled === filterOption ||
-      student.bloodstatus === filterOption ||
-      student.isPrefect === filterOption ||
-      student.isSquad === filterOption
+      student.bloodstatus === filterOption
     ) {
       return true;
     } else {
@@ -418,7 +424,7 @@ function displayAboutNumbers() {
   huffleNumber.textContent = hufflepuffStudents;
   ravenNumber.textContent = ravenclawStudents;
   slythNumber.textContent = slytherinStudents;
-  enrolledNumber.textContent = students.length;
+  enrolledNumber.textContent = enrolledStudents.length;
   expelledNumber.textContent = expelledStudents.length;
   displayedNumber.textContent = filteredStudents.length;
 }
@@ -446,8 +452,8 @@ function displayModal(currentStudent) {
   resetModal(modal);
   setBaseInfo(modal, currentStudent);
   checkAdditionalData(modal, currentStudent);
-
   activateModalBtns();
+  checkEnrollmentStatus(currentStudent);
 
   const modalBg = document.querySelector(".modal-bg");
   modalBg.classList.remove("hide");
@@ -458,7 +464,7 @@ function displayModal(currentStudent) {
       .addEventListener("click", togglePrefectStatus);
 
     function togglePrefectStatus() {
-      const otherPrefect = students.filter(student =>
+      const otherPrefect = enrolledStudents.filter(student =>
         student.isPrefect &&
         student.house === currentStudent.house &&
         student.gender === currentStudent.gender
@@ -496,10 +502,15 @@ function displayModal(currentStudent) {
       .addEventListener("click", toggleEnrollmentStatus);
 
     function toggleEnrollmentStatus() {
-      currentStudent.isEnrolled =
-        currentStudent.isEnrolled === "enrolled" ? "expelled" : "enrolled";
+      if (currentStudent.isEnrolled === "enrolled") {
+        expelStudent(currentStudent);
+      } else {
+        readmitStudent(currentStudent);
+      }
+
       removeEventListeners();
       displayModal(currentStudent);
+      displayInit();
     }
 
     function removeEventListeners() {
@@ -522,6 +533,45 @@ function displayModal(currentStudent) {
       removeEventListeners();
     }
   }
+}
+
+function checkEnrollmentStatus(currentStudent) {
+  document.querySelector("#student-modal").dataset.enrolmentstatus =
+    currentStudent.isEnrolled;
+}
+
+function readmitStudent(currentStudent) {
+  enrolledStudents = enrolledStudents.concat(
+    expelledStudents.splice(expelledStudents.indexOf(currentStudent), 1)
+  );
+  if (currentStudent.house === "Gryffindor") {
+    gryffindorStudents++;
+  } else if (currentStudent.house === "Hufflepuff") {
+    hufflepuffStudents++;
+  } else if (currentStudent.house === "Ravenclaw") {
+    ravenclawStudents++;
+  } else {
+    slytherinStudents++;
+  }
+  currentStudent.isEnrolled = "enrolled";
+  document.querySelector("#student-modal").dataset.enrolmentstatus = "enrolled";
+}
+
+function expelStudent(currentStudent) {
+  expelledStudents = expelledStudents.concat(
+    enrolledStudents.splice(enrolledStudents.indexOf(currentStudent), 1)
+  );
+  if (currentStudent.house === "Gryffindor") {
+    gryffindorStudents--;
+  } else if (currentStudent.house === "Hufflepuff") {
+    hufflepuffStudents--;
+  } else if (currentStudent.house === "Ravenclaw") {
+    ravenclawStudents--;
+  } else {
+    slytherinStudents--;
+  }
+  currentStudent.isEnrolled = "expelled";
+  document.querySelector("#student-modal").dataset.enrolmentstatus = "expelled";
 }
 
 function displaySquadWarning() {
