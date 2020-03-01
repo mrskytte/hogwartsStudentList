@@ -80,7 +80,6 @@ function initFilterNSort() {
     settings.filterEnrollment === "enrolled"
       ? enrolledStudents
       : expelledStudents;
-  console.log(filteredStudents);
   checkFilterNSort();
 }
 
@@ -101,108 +100,107 @@ function prepareSettingsNSearch() {
   const bloodFilterBtn = document.querySelector("#blood");
   const clearFilterBtn = document.querySelector("#clear");
 
-  searchBtn.addEventListener("click", prepareSearch);
+  // searchBtn.addEventListener("click", prepareSearch);
 
-  sortBtn.addEventListener("input", () => setSort(sortBtn.value));
+  // sortBtn.addEventListener("input", () => setSort(sortBtn.value));
 
-  sortDirectionBtn.addEventListener("click", changeSortDirection);
+  // sortDirectionBtn.addEventListener("click", changeSortDirection);
 
-  houseFilterBtn.addEventListener("input", () => {
-    settings.filterHouse = setFilter(houseFilterBtn.value, true);
-    initFilterNSort();
-  });
+  // houseFilterBtn.addEventListener("input", () => {
+  //   settings.filterHouse = setFilter(houseFilterBtn.value, true);
+  //   initFilterNSort();
+  // });
 
-  enrollmentFilterBtn.addEventListener("input", () => {
-    settings.filterEnrollment = setFilter(enrollmentFilterBtn.value);
-    initFilterNSort();
-  });
+  // enrollmentFilterBtn.addEventListener("input", () => {
+  //   settings.filterEnrollment = setFilter(enrollmentFilterBtn.value);
+  //   initFilterNSort();
+  // });
 
-  addInfoFilterBtn.addEventListener("input", () => {
-    settings.filterAddInfo = setFilter(addInfoFilterBtn.value);
-    initFilterNSort();
-  });
+  // addInfoFilterBtn.addEventListener("input", () => {
+  //   settings.filterAddInfo = setFilter(addInfoFilterBtn.value);
+  //   initFilterNSort();
+  // });
 
-  bloodFilterBtn.addEventListener("input", () => {
-    settings.filterBlood = setFilter(bloodFilterBtn.value);
-    initFilterNSort();
-  });
+  // bloodFilterBtn.addEventListener("input", () => {
+  //   settings.filterBlood = setFilter(bloodFilterBtn.value);
+  //   initFilterNSort();
+  // });
 
-  function prepareSearch() {
-    const searchBar = document.querySelector("#searchbar");
-    const searchModal = document.querySelector("#search-modal");
-    searchModal.classList.remove("hide");
-    searchBar.focus();
-    startSearch();
-    searchBar.addEventListener("input", startSearch);
-    window.addEventListener("keydown", e => {
-      if (e.keyCode === 13 || e.keyCode === 27) {
-        searchModal.classList.add("hide");
-        searchBar.value = "";
-      }
-    });
+  // function prepareSearch() {
+  //   const searchBar = document.querySelector("#searchbar");
+  //   const searchModal = document.querySelector("#search-modal");
+  //   searchModal.classList.remove("hide");
+  //   searchBar.focus();
+  //   startSearch();
+  //   searchBar.addEventListener("input", startSearch);
+  //   window.addEventListener("keydown", e => {
+  //     if (e.keyCode === 13 || e.keyCode === 27) {
+  //       searchModal.classList.add("hide");
+  //       searchBar.value = "";
+  //     }
+  //   });
 
-    function startSearch() {
-      let searchValue = searchBar.value.toLowerCase();
-      console.log(searchValue);
-      if (searchValue === "i solemnly swear that i am up to no good") {
-        filteredStudents = enrolledStudents;
-        hackTheSystem();
-      } else {
-        filteredStudents = [];
-        enrolledStudents.forEach(student => {
-          let fullName = student.fullName.toLowerCase();
-          if (fullName.includes(searchValue)) {
-            filteredStudents.push(student);
-          }
-        });
-      }
-      checkFilterNSort();
-    }
+  // function startSearch() {
+  //   let searchValue = searchBar.value.toLowerCase();
+  //   if (searchValue === "i solemnly swear that i am up to no good") {
+  //     filteredStudents = enrolledStudents;
+  //     hackTheSystem();
+  //   } else {
+  //     filteredStudents = [];
+  //     enrolledStudents.forEach(student => {
+  //       let fullName = student.fullName.toLowerCase();
+  //       if (fullName.includes(searchValue)) {
+  //         filteredStudents.push(student);
+  //       }
+  //     });
+  //   }
+  //   checkFilterNSort();
+  // }
+}
+
+function setSort(input) {
+  settings.sort = input;
+  activateClearBtn();
+  initFilterNSort();
+}
+
+function changeSortDirection() {
+  settings.sortDirection = settings.sortDirection === "asc" ? "desc" : "asc";
+  initFilterNSort();
+}
+
+function setFilter(value, marker) {
+  activateClearBtn();
+  return marker ? getCleanName(value) : value;
+}
+
+function activateClearBtn() {
+  clearFilterBtn.dataset.status = "enabled";
+  clearFilterBtn.addEventListener("click", resetSettings);
+  function resetSettings() {
+    clearSettings();
+    resetSelecters();
   }
-
-  function setSort(input) {
-    settings.sort = input;
-    activateClearBtn();
+  function clearSettings() {
+    settings.sort = null;
+    settings.filterHouse = null;
+    settings.filterBlood = null;
+    settings.filterEnrollment = "enrolled";
+    settings.filterAddInfo = null;
+    settings.sortDirection = "asc";
+    clearFilterBtn.dataset.status = "disabled";
     initFilterNSort();
   }
-
-  function changeSortDirection() {
-    settings.sortDirection = settings.sortDirection === "asc" ? "desc" : "asc";
-    initFilterNSort();
+  function resetSelecters() {
+    sortBtn.value = "default";
+    sortDirectionBtn.value = "default";
+    houseFilterBtn.value = "default";
+    enrollmentFilterBtn.value = "default";
+    addInfoFilterBtn.value = "default";
+    bloodFilterBtn.value = "default";
+    sortDirectionBtn.dataset.status = "disabled";
   }
-
-  function setFilter(value, marker) {
-    activateClearBtn();
-    return marker ? getCleanName(value) : value;
-  }
-
-  function activateClearBtn() {
-    clearFilterBtn.dataset.status = "enabled";
-    clearFilterBtn.addEventListener("click", resetSettings);
-    function resetSettings() {
-      clearSettings();
-      resetSelecters();
-    }
-    function clearSettings() {
-      settings.sort = null;
-      settings.filterHouse = null;
-      settings.filterBlood = null;
-      settings.filterEnrollment = "enrolled";
-      settings.filterAddInfo = null;
-      settings.sortDirection = "asc";
-      clearFilterBtn.dataset.status = "disabled";
-      initFilterNSort();
-    }
-    function resetSelecters() {
-      sortBtn.value = "default";
-      sortDirectionBtn.value = "default";
-      houseFilterBtn.value = "default";
-      enrollmentFilterBtn.value = "default";
-      addInfoFilterBtn.value = "default";
-      bloodFilterBtn.value = "default";
-      sortDirectionBtn.dataset.status = "disabled";
-    }
-  }
+  // }
 }
 
 function createStudentObject(oneStudent) {
