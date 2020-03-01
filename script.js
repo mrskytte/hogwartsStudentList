@@ -252,11 +252,11 @@ function addImgSrc() {
         student.lastName === thisStudent.lastName ? true : false
       ).length > 1
     ) {
-      thisStudent.imageSrc = `/assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName.toLowerCase()}.png`;
+      thisStudent.imageSrc = `assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName.toLowerCase()}.png`;
     } else if (thisStudent.lastName === "") {
-      thisStudent.imageSrc = `/assets/hogwarts.png`;
+      thisStudent.imageSrc = `assets/hogwarts.png`;
     } else {
-      thisStudent.imageSrc = `/assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName[0].toLowerCase()}.png`;
+      thisStudent.imageSrc = `assets/images/${thisStudent.lastName.toLowerCase()}_${thisStudent.firstName[0].toLowerCase()}.png`;
     }
   });
 }
